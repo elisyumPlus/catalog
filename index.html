@@ -1,217 +1,268 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="h-full">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kullanıcı Paneli + Sohbet</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zarif ve Kibar Deneyim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #030305;
+            color: #f3f4f6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+        }
 
-  <style>
-    :root {
-      --bg-color: #020617;
-      --text-color: #e5e7eb;
-      --sidebar-bg: rgba(15, 23, 42, 0.96);
-      --card-bg: rgba(15, 23, 42, 0.92);
-      --card-border: rgba(148, 163, 184, 0.45);
-      --button-bg: #6366f1;
-      --button-text: #f9fafb;
-      --bar-bg: #111827;
-      --muted-text: #9ca3af;
-    }
+        .sakura-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://i.hizliresim.com/hprkacvl.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.28;
+            z-index: 0;
+            filter: contrast(1.05) brightness(0.85);
+        }
 
-    body {A
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      min-height: 100vh;
-    }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(22, 16, 25, 0.7) 0%, rgba(10, 8, 13, 0.85) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 183, 197, 0.12);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-    /* SIDEBAR */
-    .sidebar {
-      width: 230px;
-      background: var(--sidebar-bg);
-      padding: 20px 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+        .glass-card:hover {
+            border-color: rgba(255, 183, 197, 0.35);
+            box-shadow: 0 25px 50px -12px rgba(255, 183, 197, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            transform: translateY(-4px);
+        }
 
-    .menu-item {
-      padding: 10px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.25s;
-    }
+        @keyframes soft-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
 
-    .menu-item.active {
-      background: var(--button-bg);
-      color: var(--button-text);
-    }
-
-    .content {
-      flex: 1;
-      padding: 25px 30px;
-    }
-
-    /* CHAT */
-    #chatSection { display: none; }
-
-    .chat-box {
-      max-width: 620px;
-      padding: 18px;
-      background: var(--card-bg);
-      border-radius: 14px;
-      box-shadow: 0 0 0 1px var(--card-border);
-    }
-
-    .messages {
-      height: 350px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 10px;
-      overflow-y: auto;
-    }
-
-    .msg { margin-bottom: 10px; }
-    .msg-user { color: #38bdf8; font-weight: bold; }
-
-    .chat-input { display: flex; gap: 10px; margin-top: 10px; }
-
-    .chat-input input {
-      flex: 1;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-      background: rgba(15, 23, 42, 0.9);
-      color: white;
-    }
-
-    .chat-input button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      background: var(--button-bg);
-      color: var(--button-text);
-      cursor: pointer;
-    }
-
-    /* PANEL / PROFIL alanları kısaltılmış */
-    #dashboardSection, #profileSection {
-      max-width: 700px;
-    }
-  </style>
+        .floating-container {
+            animation: soft-float 7s ease-in-out infinite;
+        }
+    </style>
 </head>
-<body>
+<body class="flex items-center justify-center selection:bg-pink-300 selection:text-black relative overflow-hidden">
 
-<!-- ░ SIDEBAR ░ -->
-<aside class="sidebar">
-  <div class="sidebar-logo">👤 Kullanıcı Paneli</div>
+    <div class="sakura-bg"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-[#030305] via-transparent to-[#030305]/80 pointer-events-none z-10"></div>
+    <canvas id="sakuraCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
 
-  <nav class="menu">
-    <div class="menu-item active" data-section="dashboard">🏠 Panel</div>
-    <div class="menu-item" data-section="profile">👤 Profilim</div>
-    <div class="menu-item" data-section="chat">💬 Sohbet</div>
-    <div class="menu-item" data-section="logout">🚪 Çıkış</div>
-  </nav>
-</aside>
+    <main class="flex items-center justify-center relative w-full h-full z-20 px-4">
+        <div class="flex items-center justify-center space-x-6 md:space-x-10 floating-container relative z-35">
+            
+            <!-- 1. Modül: Yazılım & Kod -->
+            <div class="group cursor-pointer" onclick="openModal('code')">
+                <div class="w-24 h-24 md:w-32 md:h-32 rounded-[2rem] glass-card flex flex-col items-center justify-center relative overflow-hidden p-4">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <i class="fa-solid fa-code text-pink-200/90 text-2xl md:text-3xl transition-transform duration-500 group-hover:scale-110"></i>
+                    <span class="text-[10px] md:text-xs tracking-wider text-pink-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Yazılım</span>
+                </div>
+            </div>
 
-<!-- ░ CONTENT ░ -->
-<div class="content">
+            <!-- 2. Modül: Küresel Ağ -->
+            <div class="group cursor-pointer" onclick="openModal('social')">
+                <div class="w-28 h-28 md:w-36 md:h-36 rounded-[2.25rem] glass-card flex flex-col items-center justify-center relative overflow-hidden p-4 border-pink-500/20">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-rose-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <i class="fa-solid fa-globe text-pink-100 text-3xl md:text-4xl transition-transform duration-500 group-hover:scale-110"></i>
+                    <span class="text-[10px] md:text-xs tracking-wider text-pink-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Ağ</span>
+                </div>
+            </div>
 
-  <!-- PANEL -->
-  <section id="dashboardSection">
-    <h1>📊 Yönetim Paneli</h1>
-    <p>İstatistikleriniz burada görüntülenir.</p>
-  </section>
+            <!-- 3. Modül: Medya & Görsel -->
+            <div class="group cursor-pointer" onclick="openModal('camera')">
+                <div class="w-24 h-24 md:w-32 md:h-32 rounded-[2rem] glass-card flex flex-col items-center justify-center relative overflow-hidden p-4">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <i class="fa-solid fa-camera text-rose-200/90 text-2xl md:text-3xl transition-transform duration-500 group-hover:scale-110"></i>
+                    <span class="text-[10px] md:text-xs tracking-wider text-rose-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Medya</span>
+                </div>
+            </div>
 
-  <!-- PROFIL -->
-  <section id="profileSection" style="display:none;">
-    <h1>👤 Profil Bilgileri</h1>
-    <p>Profiliniz buraya yüklenecek.</p>
-  </section>
+        </div>
+    </main>
 
-  <!-- ░ CHAT SECTION ░ -->
-  <section id="chatSection" style="display:none;">
-    <div class="chat-box">
-      <h2>💬 Canlı Sohbet</h2>
+    <a href="https://wa.me/905510908382?text=Merhaba,%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-40 group flex items-center justify-center w-14 h-14 rounded-full glass-card border border-emerald-500/30 hover:border-emerald-400 shadow-2xl transition-all duration-300 hover:scale-105" title="WhatsApp ile İletişime Geç">
+        <i class="fa-brands fa-whatsapp text-emerald-400 text-2xl group-hover:text-emerald-300 transition-colors"></i>
+    </a>
 
-      <div class="messages" id="messages"></div>
+    <div id="infoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
+        <div class="glass-card w-11/12 max-w-lg p-8 md:p-10 relative transform scale-95 transition-all duration-500 shadow-2xl border border-pink-500/20" id="modalContainer" style="border-radius: 2.25rem;">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-pink-200/60 hover:text-white w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            
+            <div class="flex items-center space-x-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500/15 to-purple-500/15 border border-pink-500/20 flex items-center justify-center">
+                    <i id="modalHeaderIcon" class="fa-solid fa-code text-pink-300 text-xl"></i>
+                </div>
+                <div>
+                    <h3 id="modalTitle" class="text-xl md:text-2xl font-semibold text-white tracking-wide">Modül Başlığı</h3>
+                    <p class="text-xs text-pink-300/60 tracking-wider uppercase mt-0.5">Detaylı Bilgilendirme</p>
+                </div>
+            </div>
 
-      <div class="chat-input">
-        <input id="chatInput" type="text" placeholder="Mesaj yaz..." />
-        <button id="sendBtn">Gönder</button>
-      </div>
+            <div id="modalDescription" class="text-pink-100/80 text-sm md:text-base leading-relaxed mb-8"></div>
+
+            <div class="flex items-center justify-end">
+                <button onclick="closeModal()" class="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-pink-100 font-medium text-sm transition-all border border-white/10">
+                    Kapat
+                </button>
+            </div>
+        </div>
     </div>
-  </section>
-</div>
 
-<!-- ░ JAVASCRIPT ░ -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+    <script>
+        const modalData = {
+            code: {
+                icon: "fa-code",
+                title: "Yazılım & Mimari Altyapısı",
+                points: [
+                    "Minimalist, temiz ve yüksek performanslı kod tabanı",
+                    "Modern web standartlarına tam uyumlu yapılar",
+                    "Göz yormayan, zarif ve optimize edilmiş kullanıcı arayüzü",
+                    "Geleceğe dönük sürdürülebilir teknoloji entegrasyonu"
+                ]
+            },
+            social: {
+                icon: "fa-globe",
+                title: "Küresel Bağlantı Ağları",
+                points: [
+                    "Dünya çapında kesintisiz ve güvenli erişim imkanı",
+                    "Topluluk odaklı akıllı ve dinamik veri akışı",
+                    "Kullanıcı deneyimini ön planda tutan hızlı senkronizasyon",
+                    "Gelişmiş ağ altyapısıyla güvenli etkileşim"
+                ]
+            },
+            camera: {
+                icon: "fa-camera",
+                title: "Görsel Sanatlar & Medya",
+                points: [
+                    "Yüksek çözünürlüklü ve estetik odaklı görsel akışlar",
+                    "Özenle tasarlanmış renk paletleri ve ışıklandırmalar",
+                    "Kusursuz akıcılığa sahip animasyon katmanları",
+                    "Zarif ve dingin bir atmosfer sunan medya yönetimi"
+                ]
+            }
+        };
 
-  const app = initializeApp({
-    apiKey: "AIzaSyBlaglZNm3X2jQRrOPNA9Q6D3nCvjG5VjU",
-    authDomain: "nrussystem.firebaseapp.com",
-    databaseURL: "https://nrussystem-default-rtdb.firebaseio.com",
-    projectId: "nrussystem",
-  });
+        function openModal(type) {
+            const data = modalData[type];
+            if (!data) return;
 
-  const db = getDatabase(app);
-  const chatRef = ref(db, "liveChat");
+            document.getElementById('modalHeaderIcon').className = `fa-solid ${data.icon} text-pink-300 text-xl`;
+            document.getElementById('modalTitle').textContent = data.title;
+            
+            const descContainer = document.getElementById('modalDescription');
+            descContainer.innerHTML = '';
+            const ul = document.createElement('ul');
+            ul.className = 'space-y-3.5';
+            data.points.forEach(point => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start space-x-3 text-pink-100/90';
+                li.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-pink-400 mt-2 flex-shrink-0 shadow-[0_0_8px_rgba(244,114,182,0.8)]"></span><span>${point}</span>`;
+                ul.appendChild(li);
+            });
+            descContainer.appendChild(ul);
 
-  // Kullanıcı kontrolü
-  let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-  if (!currentUser) window.location.href = "index.html";
+            const modal = document.getElementById('infoModal');
+            const container = document.getElementById('modalContainer');
 
-  // Mesajları dinle
-  const messagesBox = document.getElementById("messages");
-  onChildAdded(chatRef, snap => {
-    const msg = snap.val();
-    const div = document.createElement("div");
-    div.className = "msg";
-    div.innerHTML = `<span class='msg-user'>${msg.user}:</span> <span>${msg.text}</span>`;
-    messagesBox.appendChild(div);
-    messagesBox.scrollTop = messagesBox.scrollHeight;
-  });
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100', 'pointer-events-auto');
+            container.classList.remove('scale-95');
+            container.classList.add('scale-100');
+        }
 
-  // Mesaj gönder
-  document.getElementById("sendBtn").onclick = () => {
-    const input = document.getElementById("chatInput");
-    if (!input.value.trim()) return;
+        function closeModal() {
+            const modal = document.getElementById('infoModal');
+            const container = document.getElementById('modalContainer');
 
-    push(chatRef, {
-      user: currentUser.name,
-      text: input.value.trim(),
-      time: Date.now(),
-    });
+            modal.classList.remove('opacity-100', 'pointer-events-auto');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            container.classList.add('scale-95');
+        }
 
-    input.value = "";
-  };
+        document.getElementById('infoModal').addEventListener('click', (e) => {
+            if (e.target.id === 'infoModal') {
+                closeModal();
+            }
+        });
 
-  // MENÜ GEÇİŞİ
-  const dash    = document.getElementById("dashboardSection");
-  const profile = document.getElementById("profileSection");
-  const chat    = document.getElementById("chatSection");
+        const canvas = document.getElementById('sakuraCanvas');
+        const ctx = canvas.getContext('2d');
 
-  document.querySelectorAll(".menu-item").forEach(item => {
-    item.onclick = () => {
-      document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("active"));
-      item.classList.add("active");
+        function resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-      dash.style.display    = item.dataset.section === "dashboard" ? "block" : "none";
-      profile.style.display = item.dataset.section === "profile" ? "block" : "none";
-      chat.style.display    = item.dataset.section === "chat" ? "block" : "none";
+        class Petal {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * window.innerWidth;
+                this.y = -20;
+                this.size = Math.random() * 6 + 3;
+                this.speedY = Math.random() * 0.8 + 0.3;
+                this.speedX = Math.sin(this.y * 0.01) * 0.8;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 1.5 - 0.75;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.y * 0.015) * 0.5;
+                this.rotation += this.rotationSpeed;
+                if (this.y > window.innerHeight + 20) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.fillStyle = `rgba(255, 183, 197, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size, this.size * 0.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
 
-      if (item.dataset.section === "logout") {
-        localStorage.removeItem("currentUser");
-        window.location.href = "index.html";
-      }
-    };
-  });
-</script>
+        const petalsCount = 45;
+        const petals = [];
+        for (let i = 0; i < petalsCount; i++) {
+            const p = new Petal();
+            p.y = Math.random() * window.innerHeight;
+            petals.push(p);
+        }
 
+        function animate() {
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            petals.forEach(petal => {
+                petal.update();
+                petal.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
 </body>
 </html>
