@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kullanıcı Paneli + Sohbet</title>
+
+  <style>
+    :root {
+      --bg-color: #020617;
+      --text-color: #e5e7eb;
+      --sidebar-bg: rgba(15, 23, 42, 0.96);
+      --card-bg: rgba(15, 23, 42, 0.92);
+      --card-border: rgba(148, 163, 184, 0.45);
+      --button-bg: #6366f1;
+      --button-text: #f9fafb;
+      --bar-bg: #111827;
+      --muted-text: #9ca3af;
+    }
+
+    body {A
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 230px;
+      background: var(--sidebar-bg);
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .menu-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .menu-item.active {
+      background: var(--button-bg);
+      color: var(--button-text);
+    }
+
+    .content {
+      flex: 1;
+      padding: 25px 30px;
+    }
+
+    /* CHAT */
+    #chatSection { display: none; }
+
+    .chat-box {
+      max-width: 620px;
+      padding: 18px;
+      background: var(--card-bg);
+      border-radius: 14px;
+      box-shadow: 0 0 0 1px var(--card-border);
+    }
+
+    .messages {
+      height: 350px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    .msg { margin-bottom: 10px; }
+    .msg-user { color: #38bdf8; font-weight: bold; }
+
+    .chat-input { display: flex; gap: 10px; margin-top: 10px; }
+
+    .chat-input input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: rgba(15, 23, 42, 0.9);
+      color: white;
+    }
+
+    .chat-input button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: var(--button-bg);
+      color: var(--button-text);
+      cursor: pointer;
+    }
+
+    /* PANEL / PROFIL alanları kısaltılmış */
+    #dashboardSection, #profileSection {
+      max-width: 700px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ░ SIDEBAR ░ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">👤 Kullanıcı Paneli</div>
+
+  <nav class="menu">
+    <div class="menu-item active" data-section="dashboard">🏠 Panel</div>
+    <div class="menu-item" data-section="profile">👤 Profilim</div>
+    <div class="menu-item" data-section="chat">💬 Sohbet</div>
+    <div class="menu-item" data-section="logout">🚪 Çıkış</div>
+  </nav>
+</aside>
+
+<!-- ░ CONTENT ░ -->
+<div class="content">
+
+  <!-- PANEL -->
+  <section id="dashboardSection">
+    <h1>📊 Yönetim Paneli</h1>
+    <p>İstatistikleriniz burada görüntülenir.</p>
+  </section>
+
+  <!-- PROFIL -->
+  <section id="profileSection" style="display:none;">
+    <h1>👤 Profil Bilgileri</h1>
+    <p>Profiliniz buraya yüklenecek.</p>
+  </section>
+
+  <!-- ░ CHAT SECTION ░ -->
+  <section id="chatSection" style="display:none;">
+    <div class="chat-box">
+      <h2>💬 Canlı Sohbet</h2>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="chat-input">
+        <input id="chatInput" type="text" placeholder="Mesaj yaz..." />
+        <button id="sendBtn">Gönder</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ░ JAVASCRIPT ░ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyBlaglZNm3X2jQRrOPNA9Q6D3nCvjG5VjU",
+    authDomain: "nrussystem.firebaseapp.com",
+    databaseURL: "https://nrussystem-default-rtdb.firebaseio.com",
+    projectId: "nrussystem",
+  });
+
+  const db = getDatabase(app);
+  const chatRef = ref(db, "liveChat");
+
+  // Kullanıcı kontrolü
+  let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+  if (!currentUser) window.location.href = "index.html";
+
+  // Mesajları dinle
+  const messagesBox = document.getElementById("messages");
+  onChildAdded(chatRef, snap => {
+    const msg = snap.val();
+    const div = document.createElement("div");
+    div.className = "msg";
+    div.innerHTML = `<span class='msg-user'>${msg.user}:</span> <span>${msg.text}</span>`;
+    messagesBox.appendChild(div);
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+  });
+
+  // Mesaj gönder
+  document.getElementById("sendBtn").onclick = () => {
+    const input = document.getElementById("chatInput");
+    if (!input.value.trim()) return;
+
+    push(chatRef, {
+      user: currentUser.name,
+      text: input.value.trim(),
+      time: Date.now(),
+    });
+
+    input.value = "";
+  };
+
+  // MENÜ GEÇİŞİ
+  const dash    = document.getElementById("dashboardSection");
+  const profile = document.getElementById("profileSection");
+  const chat    = document.getElementById("chatSection");
+
+  document.querySelectorAll(".menu-item").forEach(item => {
+    item.onclick = () => {
+      document.querySelectorAll(".menu-item").forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
+
+      dash.style.display    = item.dataset.section === "dashboard" ? "block" : "none";
+      profile.style.display = item.dataset.section === "profile" ? "block" : "none";
+      chat.style.display    = item.dataset.section === "chat" ? "block" : "none";
+
+      if (item.dataset.section === "logout") {
+        localStorage.removeItem("currentUser");
+        window.location.href = "index.html";
+      }
+    };
+  });
+</script>
+
+</body>
+</html>
