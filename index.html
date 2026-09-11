@@ -58,11 +58,11 @@
     <header class="absolute top-0 left-0 right-0 z-40 p-6 flex justify-between items-center pointer-events-auto">
         <div class="flex items-center space-x-2">
             <span class="w-2 h-2 rounded-full bg-pink-400 animate-pulse"></span>
-            <span class="text-xs tracking-widest text-pink-200/70 uppercase font-semibold">KATALOG</span>
+            <span id="headerBrand" class="text-xs tracking-widest text-pink-200/70 uppercase font-semibold">KATALOG</span>
         </div>
         <button onclick="openModal('pricing')" class="glass-card px-5 py-2.5 rounded-full text-xs md:text-sm font-medium text-pink-200/90 hover:text-white flex items-center space-x-2.5 transition-all hover:scale-105 border border-pink-500/30 hover:border-pink-400 shadow-lg group">
             <i class="fa-solid fa-tags text-pink-400 group-hover:rotate-12 transition-transform"></i>
-            <span class="tracking-wide">Fiyat Paketleri</span>
+            <span id="headerPricingText" class="tracking-wide">Fiyat Paketleri</span>
         </button>
     </header>
 
@@ -78,7 +78,7 @@
                 <div class="w-24 h-24 md:w-32 md:h-32 rounded-[2rem] glass-card flex flex-col items-center justify-center relative overflow-hidden p-4">
                     <div class="absolute inset-0 bg-gradient-to-tr from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <i class="fa-solid fa-code text-pink-200/90 text-2xl md:text-3xl transition-transform duration-500 group-hover:scale-110"></i>
-                    <span class="text-[10px] md:text-xs tracking-wider text-pink-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Yazılım</span>
+                    <span id="moduleCodeText" class="text-[10px] md:text-xs tracking-wider text-pink-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Yazılım</span>
                 </div>
             </div>
 
@@ -87,7 +87,7 @@
                 <div class="w-28 h-28 md:w-36 md:h-36 rounded-[2.25rem] glass-card flex flex-col items-center justify-center relative overflow-hidden p-4 border-pink-500/20">
                     <div class="absolute inset-0 bg-gradient-to-tr from-rose-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <i class="fa-solid fa-globe text-pink-100 text-3xl md:text-4xl transition-transform duration-500 group-hover:scale-110"></i>
-                    <span class="text-[10px] md:text-xs tracking-wider text-pink-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Ağ</span>
+                    <span id="moduleSocialText" class="text-[10px] md:text-xs tracking-wider text-pink-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Ağ</span>
                 </div>
             </div>
 
@@ -96,7 +96,7 @@
                 <div class="w-24 h-24 md:w-32 md:h-32 rounded-[2rem] glass-card flex flex-col items-center justify-center relative overflow-hidden p-4">
                     <div class="absolute inset-0 bg-gradient-to-tr from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <i class="fa-solid fa-camera text-rose-200/90 text-2xl md:text-3xl transition-transform duration-500 group-hover:scale-110"></i>
-                    <span class="text-[10px] md:text-xs tracking-wider text-rose-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Medya</span>
+                    <span id="moduleCameraText" class="text-[10px] md:text-xs tracking-wider text-rose-200/60 font-medium mt-2 uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">Medya</span>
                 </div>
             </div>
 
@@ -107,11 +107,36 @@
         <i class="fa-brands fa-whatsapp text-emerald-400 text-2xl group-hover:text-emerald-300 transition-colors"></i>
     </a>
 
-    <!-- Çerezler Hakkında Kutusu (Sol Alt) -->
-    <button onclick="openModal('cookies')" class="fixed bottom-6 left-6 z-40 group flex items-center space-x-2.5 px-4 py-3 rounded-2xl glass-card border border-pink-500/20 hover:border-pink-400 shadow-xl transition-all duration-300 hover:scale-105 text-pink-200 text-xs font-medium">
-        <i class="fa-solid fa-cookie-bite text-pink-400 text-base group-hover:rotate-12 transition-transform"></i>
-        <span class="hidden sm:inline tracking-wide">Çerezler Hakkında</span>
-    </button>
+    <div class="fixed bottom-6 left-6 z-40">
+        <!-- Popover Menu -->
+        <div id="preferencesPopover" class="glass-card mb-3 p-4 rounded-2xl w-64 border border-pink-500/30 shadow-2xl hidden opacity-0 transition-all duration-300 transform translate-y-2">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-pink-500/20">
+                <span id="popoverTitleText" class="text-xs font-semibold text-pink-200 uppercase tracking-wider">Site Tercihleri</span>
+                <button onclick="togglePreferences()" class="text-pink-200/60 hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Dil Seçimi (TR / EN) -->
+            <div class="mb-3">
+                <span id="langTitleText" class="text-[11px] text-pink-300/80 block mb-1.5 font-medium">Dil Seçimi / Language</span>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setLanguage('tr')" id="langTrBtn" class="py-1.5 px-3 rounded-xl text-xs font-medium bg-pink-500/30 text-white border border-pink-400/50 transition-all">Türkçe</button>
+                    <button onclick="setLanguage('en')" id="langEnBtn" class="py-1.5 px-3 rounded-xl text-xs font-medium bg-white/5 text-pink-200/80 hover:bg-white/10 border border-white/10 transition-all">English</button>
+                </div>
+            </div>
+
+            <!-- Çerez Politikası Seçeneği -->
+            <button onclick="openModal('cookies'); togglePreferences();" class="w-full py-2 px-3 rounded-xl text-xs font-medium bg-white/5 hover:bg-white/10 text-pink-200 flex items-center justify-between border border-white/10 transition-all">
+                <span id="cookiesOptText">Çerez Politikası</span>
+                <i class="fa-solid fa-cookie-bite text-pink-400"></i>
+            </button>
+        </div>
+
+        <!-- Tercihler ve Çerezler Ana Buton -->
+        <button onclick="togglePreferences()" class="group flex items-center space-x-2.5 px-4 py-3 rounded-2xl glass-card border border-pink-500/20 hover:border-pink-400 shadow-xl transition-all duration-300 hover:scale-105 text-pink-200 text-xs font-medium">
+            <i class="fa-solid fa-cookie-bite text-pink-400 text-base group-hover:rotate-12 transition-transform"></i>
+            <span id="cookiesBtnText" class="hidden sm:inline tracking-wide">Tercihler & Çerezler</span>
+        </button>
+    </div>
 
     <div id="infoModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
         <div class="glass-card w-11/12 max-w-3xl p-8 md:p-10 relative transform scale-95 transition-all duration-500 shadow-2xl border border-pink-500/20" id="modalContainer" style="border-radius: 2.25rem;">
@@ -125,14 +150,14 @@
                 </div>
                 <div>
                     <h3 id="modalTitle" class="text-xl md:text-2xl font-semibold text-white tracking-wide">Modül Başlığı</h3>
-                    <p class="text-xs text-pink-300/60 tracking-wider uppercase mt-0.5">Detaylı Bilgilendirme</p>
+                    <p id="modalSubtitle" class="text-xs text-pink-300/60 tracking-wider uppercase mt-0.5">Detaylı Bilgilendirme</p>
                 </div>
             </div>
 
             <div id="modalDescription" class="text-pink-100/80 text-sm md:text-base leading-relaxed mb-8"></div>
 
             <div class="flex items-center justify-end">
-                <button onclick="closeModal()" class="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-pink-100 font-medium text-sm transition-all border border-white/10">
+                <button id="modalCloseBtn" onclick="closeModal()" class="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-pink-100 font-medium text-sm transition-all border border-white/10">
                     Kapat
                 </button>
             </div>
@@ -140,75 +165,236 @@
     </div>
 
     <script>
-        const modalData = {
-            code: {
-                icon: "fa-code",
-                title: "Yazılım & Mimari Altyapısı",
-                type: "list",
-                points: [
-                    "Minimalist, temiz ve yüksek performanslı kod tabanı",
-                    "Modern web standartlarına tam uyumlu yapılar",
-                    "Göz yormayan, zarif ve optimize edilmiş kullanıcı arayüzü",
-                    "Geleceğe dönük sürdürülebilir teknoloji entegrasyonu"
-                ]
-            },
-            social: {
-                icon: "fa-globe",
-                title: "Küresel Bağlantı Ağları",
-                type: "list",
-                points: [
-                    "Dünya çapında kesintisiz ve güvenli erişim imkanı",
-                    "Topluluk odaklı akıllı ve dinamik veri akışı",
-                    "Kullanıcı deneyimini ön planda tutan hızlı senkronizasyon",
-                    "Gelişmiş ağ altyapısıyla güvenli etkileşim"
-                ]
-            },
-            camera: {
-                icon: "fa-camera",
-                title: "Görsel Sanatlar & Medya",
-                type: "list",
-                points: [
-                    "Yüksek çözünürlüklü ve estetik odaklı görsel akışlar",
-                    "Özenle tasarlanmış renk paletleri ve ışıklandırmalar",
-                    "Kusursuz akıcılığa sahip animasyon katmanları",
-                    "Zarif ve dingin bir atmosfer sunan medya yönetimi"
-                ]
-            },
-            pricing: {
-                icon: "fa-tags",
-                title: "Fiyat Paketleri & Çözümler",
-                type: "pricing",
-                packages: [
-                    {
-                        name: "Başlangıç",
-                        price: "₺2.500",
-                        desc: "Hızlı çözümler ve kişisel kataloglar için ideal.",
-                        features: ["Tek Sayfa Modern Tasarım", "Temel Animasyonlar", "WhatsApp İletişim Entegrasyonu", "Mobil Uyumlu Arayüz"]
+        let currentLang = 'tr';
+
+        const translations = {
+            tr: {
+                katalog: "KATALOG",
+                pricingBtn: "Fiyat Paketleri",
+                modules: {
+                    code: "Yazılım",
+                    social: "Ağ",
+                    camera: "Medya"
+                },
+                cookiesBtn: "Tercihler & Çerezler",
+                popoverTitle: "Site Tercihleri",
+                langTitle: "Dil Seçimi",
+                cookiesOpt: "Çerez Politikası",
+                close: "Kapat",
+                getInfo: "Bilgi Al",
+                modalSubtitle: "Detaylı Bilgilendirme",
+                modalData: {
+                    code: {
+                        icon: "fa-code",
+                        title: "Yazılım & Mimari Altyapısı",
+                        type: "list",
+                        points: [
+                            "Modern ve kullanıcı dostu",
+                            "Markanıza özel profesyonel",
+                            "Hızlı, modern ve mobil uyumlu",
+                            "Güçlü tasarım, güçlü dijital görünüm",
+                            "7/24 kesintisiz destek",
+                            "Dönüşüm odaklı"
+                        ]
                     },
-                    {
-                        name: "Profesyonel",
-                        price: "₺5.000",
-                        desc: "İşletmeler ve markalar için gelişmiş özel deneyim.",
-                        features: ["Gelişmiş Glassmorphism", "Özel Canvas Efektleri", "Modüler Bilgi Ekranları", "Öncelikli Destek"]
+                    social: {
+                        icon: "fa-globe",
+                        title: "Küresel Bağlantı Ağları",
+                        type: "list",
+                        points: [
+                            "Dünya çapında kesintisiz ve güvenli erişim imkanı",
+                            "Topluluk odaklı akıllı ve dinamik veri akışı",
+                            "Kullanıcı deneyimini ön planda tutan hızlı senkronizasyon",
+                            "Gelişmiş ağ altyapısıyla güvenli etkileşim"
+                        ]
                     },
-                    {
-                        name: "Kurumsal",
-                        price: "Özel Teklif",
-                        desc: "Tamamen size özel mimari ve kapsamlı projeler.",
-                        features: ["Özel Yazılım Altyapısı", "Sınırsız Özelleştirme", "Özel Entegrasyonlar", "7/24 Kesintisiz Destek"]
+                    camera: {
+                        icon: "fa-camera",
+                        title: "Görsel Sanatlar & Medya",
+                        type: "list",
+                        points: [
+                            "Yüksek çözünürlüklü ve estetik odaklı görsel akışlar",
+                            "Özenle tasarlanmış renk paletleri ve ışıklandırmalar",
+                            "Kusursuz akıcılığa sahip animasyon katmanları",
+                            "Zarif ve dingin bir atmosfer sunan medya yönetimi"
+                        ]
+                    },
+                    pricing: {
+                        icon: "fa-tags",
+                        title: "Fiyat Paketleri & Çözümler",
+                        type: "pricing",
+                        packages: [
+                            {
+                                name: "Başlangıç",
+                                price: "₺2.500",
+                                desc: "Hızlı çözümler ve kişisel kataloglar için ideal.",
+                                features: ["Tek Sayfa Modern Tasarım", "Temel Animasyonlar", "WhatsApp İletişim Entegrasyonu", "Mobil Uyumlu Arayüz"]
+                            },
+                            {
+                                name: "Profesyonel",
+                                price: "₺5.000",
+                                desc: "İşletmeler ve markalar için gelişmiş özel deneyim.",
+                                features: ["Gelişmiş Glassmorphism", "Özel Canvas Efektleri", "Modüler Bilgi Ekranları", "Öncelikli Destek"]
+                            },
+                            {
+                                name: "Kurumsal",
+                                price: "Özel Teklif",
+                                desc: "Tamamen size özel mimari ve kapsamlı projeler.",
+                                features: ["Özel Yazılım Altyapısı", "Sınırsız Özelleştirme", "Özel Entegrasyonlar", "7/24 Kesintisiz Destek"]
+                            }
+                        ]
+                    },
+                    cookies: {
+                        icon: "fa-cookie-bite",
+                        title: "Çerez Politikası ve Gizlilik",
+                        type: "text",
+                        content: "Bu web sitesi, kullanıcı deneyiminizi geliştirmek, site performansını analiz etmek ve tercihlerinizi hatırlamak amacıyla çerezler (cookies) kullanmaktadır. Sitemizde gezinmeye devam ederek çerez kullanımımızı kabul etmiş olursunuz."
                     }
-                ]
+                }
             },
-            cookies: {
-                icon: "fa-cookie-bite",
-                title: "Çerez Politikası ve Gizlilik",
-                type: "text",
-                content: "Bu web sitesi, kullanıcı deneyiminizi geliştirmek, site performansını analiz etmek ve tercihlerinizi hatırlamak amacıyla çerezler (cookies) kullanmaktadır. Sitemizde gezinmeye devam ederek çerez kullanımımızı kabul etmiş olursunuz."
+            en: {
+                katalog: "CATALOG",
+                pricingBtn: "Pricing Packages",
+                modules: {
+                    code: "Software",
+                    social: "Network",
+                    camera: "Media"
+                },
+                cookiesBtn: "Preferences & Cookies",
+                popoverTitle: "Site Preferences",
+                langTitle: "Language",
+                cookiesOpt: "Cookie Policy",
+                close: "Close",
+                getInfo: "Get Info",
+                modalSubtitle: "Detailed Information",
+                modalData: {
+                    code: {
+                        icon: "fa-code",
+                        title: "Software & Architecture",
+                        type: "list",
+                        points: [
+                            "High-resolution, aesthetically focused visual flows",
+                            "Carefully designed color palettes and lighting",
+                            "Seamlessly smooth and fluid animation layers",
+                            "Media management that creates an elegant, calming atmosphere"
+                        ]
+                    },
+                    social: {
+                        icon: "fa-globe",
+                        title: "Global Connection Networks",
+                        type: "list",
+                        points: [
+                            "Modern and user-friendly",
+                            "Professional and tailored to your brand",
+                            "Fast, modern, and mobile-friendly",
+                            "Strong design, strong digital presence",
+                            "24/7 uninterrupted support",
+                        ]
+                    },
+                    camera: {
+                        icon: "fa-camera",
+                        title: "Visual Arts & Media",
+                        type: "list",
+                        points: [
+                            "High-resolution and aesthetic-focused visual streams",
+                            "Carefully designed color palettes and lighting",
+                            "Animation layers with flawless fluidity",
+                            "Media management offering an elegant and serene atmosphere"
+                        ]
+                    },
+                    pricing: {
+                        icon: "fa-tags",
+                        title: "Pricing Packages & Solutions",
+                        type: "pricing",
+                        packages: [
+                            {
+                                name: "Starter",
+                                price: "$85",
+                                desc: "Ideal for quick solutions and personal catalogs.",
+                                features: ["Single Page Modern Design", "Basic Animations", "WhatsApp Integration", "Mobile Friendly Interface"]
+                            },
+                            {
+                                name: "Professional",
+                                price: "$170",
+                                desc: "Advanced custom experience for businesses and brands.",
+                                features: ["Advanced Glassmorphism", "Custom Canvas Effects", "Modular Info Screens", "Priority Support"]
+                            },
+                            {
+                                name: "Enterprise",
+                                price: "Custom Offer",
+                                desc: "Custom architecture and comprehensive projects for you.",
+                                features: ["Custom Software Infra", "Unlimited Customization", "Special Integrations", "24/7 Dedicated Support"]
+                            }
+                        ]
+                    },
+                    cookies: {
+                        icon: "fa-cookie-bite",
+                        title: "Cookie Policy & Privacy",
+                        type: "text",
+                        content: "This website uses cookies to enhance your user experience, analyze site performance, and remember your preferences. By continuing to browse our site, you accept our use of cookies."
+                    }
+                }
             }
         };
 
-        function openModal(type) {
-            const data = modalData[type];
+        let currentActiveModalType = null;
+
+        function togglePreferences() {
+            const popover = document.getElementById('preferencesPopover');
+            if (popover.classList.contains('hidden')) {
+                popover.classList.remove('hidden');
+                setTimeout(() => {
+                    popover.classList.remove('opacity-0', 'translate-y-2');
+                }, 10);
+            } else {
+                popover.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    popover.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+
+            // Update static elements
+            document.getElementById('headerBrand').textContent = t.katalog;
+            document.getElementById('headerPricingText').textContent = t.pricingBtn;
+            document.getElementById('moduleCodeText').textContent = t.modules.code;
+            document.getElementById('moduleSocialText').textContent = t.modules.social;
+            document.getElementById('moduleCameraText').textContent = t.modules.camera;
+            document.getElementById('popoverTitleText').textContent = t.popoverTitle;
+            document.getElementById('langTitleText').textContent = t.langTitle;
+            document.getElementById('cookiesOptText').textContent = t.cookiesOpt;
+            document.getElementById('cookiesBtnText').textContent = t.cookiesBtn;
+            document.getElementById('modalCloseBtn').textContent = t.close;
+            document.getElementById('modalSubtitle').textContent = t.modalSubtitle;
+
+            // Highlight active lang button
+            const trBtn = document.getElementById('langTrBtn');
+            const enBtn = document.getElementById('langEnBtn');
+            if (lang === 'tr') {
+                trBtn.className = "py-1.5 px-3 rounded-xl text-xs font-medium bg-pink-500/30 text-white border border-pink-400/50 transition-all";
+                enBtn.className = "py-1.5 px-3 rounded-xl text-xs font-medium bg-white/5 text-pink-200/80 hover:bg-white/10 border border-white/10 transition-all";
+            } else {
+                enBtn.className = "py-1.5 px-3 rounded-xl text-xs font-medium bg-pink-500/30 text-white border border-pink-400/50 transition-all";
+                trBtn.className = "py-1.5 px-3 rounded-xl text-xs font-medium bg-white/5 text-pink-200/80 hover:bg-white/10 border border-white/10 transition-all";
+            }
+
+            // Refresh modal if open
+            if (currentActiveModalType) {
+                openModal(currentActiveModalType, true);
+            }
+
+            togglePreferences();
+        }
+
+        function openModal(type, skipActiveUpdate = false) {
+            if (!skipActiveUpdate) {
+                currentActiveModalType = type;
+            }
+            const data = translations[currentLang].modalData[type];
             if (!data) return;
 
             document.getElementById('modalHeaderIcon').className = `fa-solid ${data.icon} text-pink-300 text-xl`;
@@ -236,7 +422,7 @@
                             </ul>
                         </div>
                         <a href="https://wa.me/905510908382?text=Merhaba,%20${encodeURIComponent(pkg.name)}%20paketi%20hakkında%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="w-full py-2.5 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 text-pink-200 text-xs font-medium text-center transition-all border border-pink-500/30">
-                            Bilgi Al
+                            ${translations[currentLang].getInfo}
                         </a>
                     `;
                     grid.appendChild(card);
@@ -269,6 +455,7 @@
         }
 
         function closeModal() {
+            currentActiveModalType = null;
             const modal = document.getElementById('infoModal');
             const container = document.getElementById('modalContainer');
 
@@ -283,6 +470,7 @@
             }
         });
 
+        // Sakura particle canvas animation
         const canvas = document.getElementById('sakuraCanvas');
         const ctx = canvas.getContext('2d');
 
