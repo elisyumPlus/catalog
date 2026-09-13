@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karşılaştırma Afişi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .poster-card {
+            background: linear-gradient(145deg, rgba(35, 25, 60, 0.95), rgba(18, 12, 35, 0.98));
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body id="mainBody" class="bg-gradient-to-br from-slate-950 via-zinc-950 to-indigo-950 text-white min-h-screen relative overflow-x-hidden flex flex-col items-center justify-center p-3 sm:p-6" style="background: linear-gradient(to bottom right, #09090b, #09090b, #1e1b4b);">
+
+    <!-- Background glowing ambient lights -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div id="ambientGlow1" class="absolute top-1/4 left-1/3 w-96 h-96 bg-purple-600/25 rounded-full blur-[120px] transition-all duration-500"></div>
+        <div id="ambientGlow2" class="absolute bottom-1/4 right-1/3 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] transition-all duration-500"></div>
+    </div>
+
+    <!-- Settings Drawer Toggle Button (Discreet top right) -->
+    <button id="settingsToggleBtn" aria-label="Ayarları Aç/Kapat" class="fixed top-4 right-4 z-50 glass-panel p-3 rounded-full hover:bg-white/20 transition-all duration-300 shadow-2xl active:scale-95 group">
+        <svg class="w-5 h-5 text-white transition-transform duration-500 group-hover:rotate-90" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+    </button>
+
+    <!-- Main Poster Container -->
+    <main class="w-full max-w-[460px] z-10 flex flex-col items-center poster-card rounded-[36px] p-6 sm:p-8 text-center border border-white/15 my-auto">
+
+        <!-- Logo & Brand Row -->
+        <div class="flex items-center justify-center gap-3 mb-6">
+            <div id="logoContainer" class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+                <svg id="defaultLogoSvg" class="w-6 h-6 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 6h7v12H3V6zm11 0h7v12h-7V6zM7 9H5v6h2V9zm11 0h-2v6h2V9z"/>
+                </svg>
+                <img id="customLogoImg" class="w-full h-full object-cover hidden" alt="Logo" />
+            </div>
+            <h1 id="firmNameDisplay" class="text-2xl font-extrabold tracking-tight text-white">NRUS</h1>
+        </div>
+
+        <!-- Main Headline -->
+        <h2 id="headlineDisplay" class="text-2xl sm:text-[28px] font-extrabold tracking-tight text-white leading-snug mb-4">
+            Hizmetleri tek tek, maliyeti kat kat mı alıyorsunuz?
+        </h2>
+
+        <!-- Subheadline -->
+        <p id="subheadlineDisplay" class="text-sm sm:text-base text-purple-200/80 font-medium mb-8 max-w-[360px]">
+            Starter Paket ile hepsi en uygun fiyata tek pakette.
+        </p>
+
+        <!-- Comparison Table -->
+        <div class="w-full bg-slate-900/60 rounded-2xl overflow-hidden border border-white/10 shadow-2xl text-left">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="border-b border-white/10 bg-white/5 text-[11px] sm:text-xs uppercase tracking-wider text-purple-200/70 font-semibold">
+                        <th class="p-3.5 sm:p-4 w-1/3">Hizmet</th>
+                        <th id="marketColHeader" class="p-3.5 sm:p-4 text-center w-1/3">Ortalama Piyasa Fiyatı</th>
+                        <th id="packageColHeader" class="p-3.5 sm:p-4 text-center w-1/3 text-white bg-indigo-900/40">Starter Paket</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-white/10 text-xs sm:text-sm">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <!-- Settings Drawer -->
+    <div id="settingsDrawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md glass-panel p-6 shadow-2xl transform translate-x-full transition-transform duration-500 flex flex-col gap-6 overflow-y-auto bg-slate-950/95 border-l border-white/10 text-left">
+        
+        <div class="flex items-center justify-between pb-4 border-b border-white/10">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                Afiş Düzenleme Paneli
+            </h2>
+            <button id="settingsCloseBtn" aria-label="Kapat" class="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <!-- Settings Form -->
+        <div class="flex flex-col gap-5 text-sm">
+            
+            <!-- Background Colors Section -->
+            <div class="flex flex-col gap-3 bg-black/30 p-4 rounded-2xl border border-white/10">
+                <span class="text-xs font-semibold uppercase tracking-wider text-purple-400">Arka Plan Renkleri</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs text-slate-300">Başlangıç Rengi</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="inputBgColor1" value="#09090b" class="w-10 h-10 bg-transparent rounded-lg cursor-pointer border border-white/20">
+                            <input type="text" id="inputBgText1" value="#09090b" class="w-full bg-white/5 border border-white/10 rounded-xl px-2 py-1.5 text-xs text-white">
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs text-slate-300">Bitiş Rengi</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="inputBgColor2" value="#1e1b4b" class="w-10 h-10 bg-transparent rounded-lg cursor-pointer border border-white/20">
+                            <input type="text" id="inputBgText2" value="#1e1b4b" class="w-full bg-white/5 border border-white/10 rounded-xl px-2 py-1.5 text-xs text-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brand & Logo -->
+            <div class="flex flex-col gap-3 bg-black/30 p-4 rounded-2xl border border-white/10">
+                <span class="text-xs font-semibold uppercase tracking-wider text-purple-400">Marka ve Logo</span>
+                
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-300">Firma İsmi</label>
+                    <input type="text" id="inputFirmName" value="Mükellef" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-300">Logo Yükle (Görsel Seç veya URL Gir)</label>
+                    <div class="flex gap-2">
+                        <input type="file" id="logoFileInput" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+                        <button onclick="document.getElementById('logoFileInput').click()" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-2 rounded-xl border border-white/15 transition-colors font-medium">Dosya Seç</button>
+                        <input type="text" id="inputLogoUrl" placeholder="Veya resim URL adresi yapıştır..." class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500 transition-colors">
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-300">Ana Soru / Başlık</label>
+                    <textarea id="inputHeadline" rows="2" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">Hizmetleri tek tek, maliyeti kat kat mı alıyorsunuz?</textarea>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs text-slate-300">Alt Açıklama</label>
+                    <input type="text" id="inputSubheadline" value="Starter Paket ile hepsi en uygun fiyata tek pakette." class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs text-slate-300">Ortalama Piyasa Sütun Başlığı</label>
+                        <input type="text" id="inputMarketHeader" value="Ortalama Piyasa Fiyatı" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs text-slate-300">Paket Sütun Başlığı</label>
+                        <input type="text" id="inputPackageHeader" value="Starter Paket" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-purple-500 transition-colors">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Rows Customization -->
+            <div class="flex flex-col gap-3 bg-black/30 p-4 rounded-2xl border border-white/10">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-purple-400">Tablo Hizmetleri ve Fiyatlar</span>
+                    <button onclick="addTableRow()" class="text-xs bg-purple-600 hover:bg-purple-500 text-white px-2.5 py-1 rounded-lg transition-colors font-medium">Hizmet Ekle</button>
+                </div>
+                
+                <div id="tableEditorContainer" class="flex flex-col gap-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Accent Package Big Price -->
+            <div class="flex flex-col gap-3 bg-black/30 p-4 rounded-2xl border border-white/10">
+                <span class="text-xs font-semibold uppercase tracking-wider text-purple-400">Paket Vurgu Fiyatı</span>
+                <input type="text" id="inputPackagePrice" value="₺9.999" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-purple-500 transition-colors">
+            </div>
+
+            <!-- Actions Row -->
+            <div class="flex gap-2">
+                <button onclick="applySettings()" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg transition-all active:scale-95">
+                    Afişi Güncelle ve Kaydet
+                </button>
+                <button onclick="resetToDefault()" class="bg-white/10 hover:bg-white/20 text-slate-300 px-4 py-3 rounded-xl font-medium transition-colors text-xs" title="Varsayılana Sıfırla">
+                    Sıfırla
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Default App State
+        const defaultState = {
+            firmName: "Mükellef",
+            logoUrl: "",
+            headline: "Hizmetleri tek tek, maliyeti kat kat mı alıyorsunuz?",
+            subheadline: "Starter Paket ile hepsi en uygun fiyata tek pakette.",
+            marketHeader: "Ortalama Piyasa Fiyatı",
+            packageHeader: "Starter Paket",
+            packagePrice: "₺9.999",
+            bgColor1: "#09090b",
+            bgColor2: "#1e1b4b",
+            rows: [
+                { service: "Sanal Ofis", marketPrice: "₺7.000 - ₺14.000" },
+                { service: "E-Fatura Aboneliği", marketPrice: "₺3.000 - ₺6.000" },
+                { service: "E-İmza", marketPrice: "₺1.500 - ₺3.000" },
+                { service: "Ön Muhasebe Programı", marketPrice: "₺6.000 - ₺12.000" },
+                { service: "Toplam", marketPrice: "₺17.500 - ₺35.000+" }
+            ]
+        };
+
+        // Load state from localStorage if available
+        let appState = JSON.parse(localStorage.getItem('mukellef_poster_state')) || defaultState;
+
+        // DOM elements
+        const mainBody = document.getElementById('mainBody');
+        const firmNameDisplay = document.getElementById('firmNameDisplay');
+        const headlineDisplay = document.getElementById('headlineDisplay');
+        const subheadlineDisplay = document.getElementById('subheadlineDisplay');
+        const marketColHeader = document.getElementById('marketColHeader');
+        const packageColHeader = document.getElementById('packageColHeader');
+        const tableBody = document.getElementById('tableBody');
+        const defaultLogoSvg = document.getElementById('defaultLogoSvg');
+        const customLogoImg = document.getElementById('customLogoImg');
+
+        const settingsToggleBtn = document.getElementById('settingsToggleBtn');
+        const settingsCloseBtn = document.getElementById('settingsCloseBtn');
+        const settingsDrawer = document.getElementById('settingsDrawer');
+
+        // Color sync listeners in settings
+        document.getElementById('inputBgColor1').addEventListener('input', (e) => {
+            document.getElementById('inputBgText1').value = e.target.value;
+        });
+        document.getElementById('inputBgColor2').addEventListener('input', (e) => {
+            document.getElementById('inputBgText2').value = e.target.value;
+        });
+
+        settingsToggleBtn.addEventListener('click', () => {
+            settingsDrawer.classList.remove('translate-x-full');
+            renderSettingsEditor();
+        });
+
+        settingsCloseBtn.addEventListener('click', () => {
+            settingsDrawer.classList.add('translate-x-full');
+        });
+
+        function renderApp() {
+            firmNameDisplay.textContent = appState.firmName;
+            headlineDisplay.textContent = appState.headline;
+            subheadlineDisplay.textContent = appState.subheadline;
+            marketColHeader.textContent = appState.marketHeader;
+            packageColHeader.textContent = appState.packageHeader;
+
+            // Apply background gradient
+            const c1 = appState.bgColor1 || '#09090b';
+            const c2 = appState.bgColor2 || '#1e1b4b';
+            mainBody.style.background = `linear-gradient(to bottom right, ${c1}, #09090b, ${c2})`;
+
+            // Handle Logo display
+            if (appState.logoUrl && appState.logoUrl.trim() !== '') {
+                customLogoImg.src = appState.logoUrl;
+                customLogoImg.classList.remove('hidden');
+                defaultLogoSvg.classList.add('hidden');
+            } else {
+                customLogoImg.classList.add('hidden');
+                defaultLogoSvg.classList.remove('hidden');
+            }
+
+            tableBody.innerHTML = '';
+            appState.rows.forEach((row, index) => {
+                const isLast = index === appState.rows.length - 1;
+                const tr = document.createElement('tr');
+                tr.className = isLast ? "bg-indigo-950/30 font-bold" : "hover:bg-white/5 transition-colors";
+
+                let rightCellContent = '';
+                if (index === 0) {
+                    rightCellContent = `
+                        <td rowspan="${appState.rows.length}" class="p-4 text-center align-middle bg-indigo-950/60 border-l border-white/10">
+                            <span class="text-xl sm:text-2xl font-extrabold text-emerald-400 drop-shadow-md tracking-tight">${escapeHtml(appState.packagePrice)}</span>
+                        </td>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    <td class="p-3.5 sm:p-4 text-white font-medium">${escapeHtml(row.service)}</td>
+                    <td class="p-3.5 sm:p-4 text-center text-purple-200/80 font-medium">${escapeHtml(row.marketPrice)}</td>
+                    ${rightCellContent}
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function renderSettingsEditor() {
+            document.getElementById('inputFirmName').value = appState.firmName;
+            document.getElementById('inputLogoUrl').value = appState.logoUrl || '';
+            document.getElementById('inputHeadline').value = appState.headline;
+            document.getElementById('inputSubheadline').value = appState.subheadline;
+            document.getElementById('inputMarketHeader').value = appState.marketHeader;
+            document.getElementById('inputPackageHeader').value = appState.packageHeader;
+            document.getElementById('inputPackagePrice').value = appState.packagePrice;
+            
+            const col1 = appState.bgColor1 || '#09090b';
+            const col2 = appState.bgColor2 || '#1e1b4b';
+            document.getElementById('inputBgColor1').value = col1;
+            document.getElementById('inputBgText1').value = col1;
+            document.getElementById('inputBgColor2').value = col2;
+            document.getElementById('inputBgText2').value = col2;
+
+            const tableEditorContainer = document.getElementById('tableEditorContainer');
+            tableEditorContainer.innerHTML = '';
+
+            appState.rows.forEach((row, index) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = "flex flex-col gap-2 p-3 bg-white/5 rounded-xl border border-white/10 relative";
+                rowDiv.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-purple-300">Hizmet #${index + 1}</span>
+                        <button onclick="removeTableRow(${index})" class="text-xs text-red-400 hover:text-red-300">Sil</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" placeholder="Hizmet Adı" value="${escapeHtml(row.service)}" id="rowService_${index}" class="w-full bg-black/40 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                        <input type="text" placeholder="Piyasa Fiyatı" value="${escapeHtml(row.marketPrice)}" id="rowMarket_${index}" class="w-full bg-black/40 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                `;
+                tableEditorContainer.appendChild(rowDiv);
+            });
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('inputLogoUrl').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addTableRow() {
+            appState.rows.splice(appState.rows.length - 1, 0, { service: "Yeni Hizmet", marketPrice: "₺2.000 - ₺4.000" });
+            renderSettingsEditor();
+        }
+
+        function removeTableRow(index) {
+            if (appState.rows.length > 2) {
+                appState.rows.splice(index, 1);
+                renderSettingsEditor();
+            }
+        }
+
+        function applySettings() {
+            appState.firmName = document.getElementById('inputFirmName').value;
+            appState.logoUrl = document.getElementById('inputLogoUrl').value;
+            appState.headline = document.getElementById('inputHeadline').value;
+            appState.subheadline = document.getElementById('inputSubheadline').value;
+            appState.marketHeader = document.getElementById('inputMarketHeader').value;
+            appState.packageHeader = document.getElementById('inputPackageHeader').value;
+            appState.packagePrice = document.getElementById('inputPackagePrice').value;
+            appState.bgColor1 = document.getElementById('inputBgText1').value || '#09090b';
+            appState.bgColor2 = document.getElementById('inputBgText2').value || '#1e1b4b';
+
+            appState.rows = appState.rows.map((row, index) => {
+                const sEl = document.getElementById(`rowService_${index}`);
+                const mEl = document.getElementById(`rowMarket_${index}`);
+                return {
+                    service: sEl ? sEl.value : row.service,
+                    marketPrice: mEl ? mEl.value : row.marketPrice
+                };
+            });
+
+            // Save to localStorage
+            localStorage.setItem('mukellef_poster_state', JSON.stringify(appState));
+
+            renderApp();
+            settingsDrawer.classList.add('translate-x-full');
+        }
+
+        function resetToDefault() {
+            if (confirm("Tüm ayarları varsayılana sıfırlamak istiyor musunuz?")) {
+                localStorage.removeItem('mukellef_poster_state');
+                appState = JSON.parse(JSON.stringify(defaultState));
+                renderApp();
+                renderSettingsEditor();
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Initial render on load
+        renderApp();
+    </script>
+</body>
+</html>
